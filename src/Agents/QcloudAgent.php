@@ -1,6 +1,11 @@
 <?php
 
-namespace Toplan\PhpSms;
+namespace Lucups\PhpSms\Agents;
+
+use Lucups\PhpSms\Interfaces\ContentSms;
+use Lucups\PhpSms\Interfaces\ContentVoice;
+use Lucups\PhpSms\Interfaces\TemplateSms;
+use Lucups\PhpSms\Interfaces\VoiceCode;
 
 /**
  * Class SendCloudAgent
@@ -10,8 +15,8 @@ namespace Toplan\PhpSms;
  */
 class QcloudAgent extends Agent implements TemplateSms, ContentSms, VoiceCode, ContentVoice
 {
-    protected $sendSms = 'https://yun.tim.qq.com/v5/tlssmssvr/sendsms';
-    protected $sendVoiceCode = 'https://yun.tim.qq.com/v5/tlsvoicesvr/sendvoice';
+    protected $sendSms         = 'https://yun.tim.qq.com/v5/tlssmssvr/sendsms';
+    protected $sendVoiceCode   = 'https://yun.tim.qq.com/v5/tlsvoicesvr/sendvoice';
     protected $sendVoicePrompt = 'https://yun.tim.qq.com/v5/tlsvoicesvr/sendvoiceprompt';
     protected $random;
 
@@ -19,8 +24,8 @@ class QcloudAgent extends Agent implements TemplateSms, ContentSms, VoiceCode, C
     {
         $list = array_map(function ($value) {
             return [
-                'nationcode'    => $value['nation'],
-                'mobile'        => $value['number'],
+                'nationcode' => $value['nation'],
+                'mobile'     => $value['number'],
             ];
         }, array_filter($list, function ($value) {
             return is_array($value);
@@ -31,35 +36,35 @@ class QcloudAgent extends Agent implements TemplateSms, ContentSms, VoiceCode, C
 
     public function sendContentSms($to, $content)
     {
-        $params = [
-            'type'   => 0, // 0:普通短信 1:营销短信
-            'msg'    => $content,
-            'tel'    => $to,
-            'time'   => time(),
+        $params       = [
+            'type' => 0, // 0:普通短信 1:营销短信
+            'msg'  => $content,
+            'tel'  => $to,
+            'time' => time(),
         ];
         $this->random = $this->getRandom();
-        $sendUrl = "{$this->sendSms}?sdkappid={$this->appId}&random={$this->random}";
+        $sendUrl      = "{$this->sendSms}?sdkappid={$this->appId}&random={$this->random}";
         $this->request($sendUrl, $params);
     }
 
     public function sendTemplateSms($to, $tempId, array $data)
     {
-        $params = [
+        $params       = [
             'tel'    => $to,
             'tpl_id' => $tempId,
             'params' => array_values($data),
             'time'   => time(),
         ];
         $this->random = $this->getRandom();
-        $sendUrl = "{$this->sendSms}?sdkappid={$this->appId}&random={$this->random}";
+        $sendUrl      = "{$this->sendSms}?sdkappid={$this->appId}&random={$this->random}";
         $this->request($sendUrl, $params);
     }
 
     public function sendVoiceCode($to, $code)
     {
-        $params = [
-            'tel'    => $to,
-            'msg'    => $code,
+        $params  = [
+            'tel' => $to,
+            'msg' => $code,
         ];
         $sendUrl = "{$this->sendVoiceCode}?sdkappid={$this->appId}&random={$this->random}";
         $this->request($sendUrl, $params);
@@ -67,7 +72,7 @@ class QcloudAgent extends Agent implements TemplateSms, ContentSms, VoiceCode, C
 
     public function sendContentVoice($to, $content)
     {
-        $params = [
+        $params  = [
             'tel'        => $to,
             'prompttype' => 2,
             'promptfile' => $content,
@@ -79,8 +84,8 @@ class QcloudAgent extends Agent implements TemplateSms, ContentSms, VoiceCode, C
     protected function request($sendUrl, array $params)
     {
         $params['sig'] = $this->genSign($params);
-        $params = $this->params($params);
-        $result = $this->curlPost($sendUrl, [], [
+        $params        = $this->params($params);
+        $result        = $this->curlPost($sendUrl, [], [
             CURLOPT_POSTFIELDS => json_encode($params),
         ]);
         $this->setResult($result);

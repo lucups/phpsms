@@ -1,6 +1,8 @@
 <?php
 
-namespace Toplan\PhpSms;
+namespace Lucups\PhpSms\Agents;
+
+use Lucups\PhpSms\Interfaces\TemplateSms;
 
 /**
  * Class AliyunAgent
@@ -17,11 +19,11 @@ class AliyunAgent extends Agent implements TemplateSms
     public function sendTemplateSms($to, $tempId, array $data)
     {
         $params = [
-            'Action'            => 'SendSms',
-            'SignName'          => $this->signName,
-            'TemplateParam'     => $this->getTempDataString($data),
-            'PhoneNumbers'      => $to,
-            'TemplateCode'      => $tempId,
+            'Action'        => 'SendSms',
+            'SignName'      => $this->signName,
+            'TemplateParam' => $this->getTempDataString($data),
+            'PhoneNumbers'  => $to,
+            'TemplateCode'  => $tempId,
         ];
         $this->request($params);
     }
@@ -37,15 +39,15 @@ class AliyunAgent extends Agent implements TemplateSms
 
     protected function createParams(array $params)
     {
-        $params = array_merge([
-            'RegionId'          => $this->regionId ?: 'cn-shenzhen',
-            'Format'            => 'JSON',
-            'Version'           => '2017-05-25',
-            'AccessKeyId'       => $this->accessKeyId,
-            'SignatureMethod'   => 'HMAC-SHA1',
-            'Timestamp'         => gmdate('Y-m-d\TH:i:s\Z'),
-            'SignatureVersion'  => '1.0',
-            'SignatureNonce'    => uniqid(),
+        $params              = array_merge([
+            'RegionId'         => $this->regionId ?: 'cn-shenzhen',
+            'Format'           => 'JSON',
+            'Version'          => '2017-05-25',
+            'AccessKeyId'      => $this->accessKeyId,
+            'SignatureMethod'  => 'HMAC-SHA1',
+            'Timestamp'        => gmdate('Y-m-d\TH:i:s\Z'),
+            'SignatureVersion' => '1.0',
+            'SignatureNonce'   => uniqid(),
         ], $params);
         $params['Signature'] = $this->computeSignature($params);
 
@@ -91,7 +93,7 @@ class AliyunAgent extends Agent implements TemplateSms
     protected function getTempDataString(array $data)
     {
         $data = array_map(function ($value) {
-            return (string) $value;
+            return (string)$value;
         }, $data);
 
         return json_encode($data);

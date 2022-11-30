@@ -1,6 +1,6 @@
 <?php
 
-namespace Toplan\PhpSms;
+namespace Lucups\PhpSms\Interfaces;
 
 interface FileVoice
 {
@@ -8,7 +8,7 @@ interface FileVoice
      * File voice send process.
      *
      * @param string|array $to
-     * @param int|string   $fileId
+     * @param int|string $fileId
      */
     public function sendFileVoice($to, $fileId);
 }

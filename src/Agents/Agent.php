@@ -1,12 +1,19 @@
 <?php
 
-namespace Toplan\PhpSms;
+namespace Lucups\PhpSms\Agents;
+
+use Lucups\PhpSms\Interfaces\ContentSms;
+use Lucups\PhpSms\Interfaces\ContentVoice;
+use Lucups\PhpSms\Interfaces\FileVoice;
+use Lucups\PhpSms\Interfaces\TemplateSms;
+use Lucups\PhpSms\Interfaces\TemplateVoice;
+use Lucups\PhpSms\Interfaces\VoiceCode;
 
 abstract class Agent
 {
     const SUCCESS = 'success';
-    const INFO = 'info';
-    const CODE = 'code';
+    const INFO    = 'info';
+    const CODE    = 'code';
 
     /**
      * The configuration information.
@@ -56,8 +63,8 @@ abstract class Agent
      * Get or set the configuration information.
      *
      * @param string|array $key
-     * @param mixed        $value
-     * @param bool         $override
+     * @param mixed $value
+     * @param bool $override
      *
      * @return mixed
      */
@@ -74,8 +81,8 @@ abstract class Agent
      * Get or set the custom params.
      *
      * @param string|array $key
-     * @param mixed        $value
-     * @param bool         $override
+     * @param mixed $value
+     * @param bool $override
      *
      * @return mixed
      */
@@ -164,8 +171,8 @@ abstract class Agent
     public function curlPost($url, array $params = [], array $opts = [])
     {
         $options = [
-            CURLOPT_POST    => true,
-            CURLOPT_URL     => $url,
+            CURLOPT_POST => true,
+            CURLOPT_URL  => $url,
         ];
         foreach ($opts as $key => $value) {
             if ($key !== CURLOPT_POST && $key !== CURLOPT_URL) {
@@ -190,10 +197,10 @@ abstract class Agent
      */
     public function curlGet($url, array $params = [], array $opts = [])
     {
-        $params = $this->params($params);
-        $queryStr = http_build_query($params);
+        $params             = $this->params($params);
+        $queryStr           = http_build_query($params);
         $opts[CURLOPT_POST] = false;
-        $opts[CURLOPT_URL] = $queryStr ? "$url?$queryStr" : $url;
+        $opts[CURLOPT_URL]  = $queryStr ? "$url?$queryStr" : $url;
 
         return self::curl($opts);
     }
@@ -224,7 +231,7 @@ abstract class Agent
         }
 
         $response = curl_exec($ch);
-        $request = $response !== false;
+        $request  = $response !== false;
         if (!$request) {
             $response = curl_getinfo($ch);
         }

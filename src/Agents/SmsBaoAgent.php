@@ -1,6 +1,9 @@
 <?php
 
-namespace Toplan\PhpSms;
+namespace Lucups\PhpSms\Agents;
+
+use Lucups\PhpSms\Interfaces\ContentSms;
+use Lucups\PhpSms\Interfaces\VoiceCode;
 
 /**
  * Class SmsBaoAgent
@@ -24,7 +27,7 @@ class SmsBaoAgent extends Agent implements ContentSms, VoiceCode
 
     public function sendContentSms($to, $content)
     {
-        $url = 'http://api.smsbao.com/sms';
+        $url    = 'http://api.smsbao.com/sms';
         $params = [
             'u' => $this->username,
             'p' => md5($this->password),
@@ -37,7 +40,7 @@ class SmsBaoAgent extends Agent implements ContentSms, VoiceCode
 
     public function sendVoiceCode($to, $code)
     {
-        $url = 'http://api.smsbao.com/voice';
+        $url    = 'http://api.smsbao.com/voice';
         $params = [
             'u' => $this->username,
             'p' => md5($this->password),
@@ -52,7 +55,7 @@ class SmsBaoAgent extends Agent implements ContentSms, VoiceCode
     {
         if ($result['request']) {
             $result = $result['response'];
-            $msg = array_key_exists($result, $this->resultArr) ? $this->resultArr[$result] : 'unknown error';
+            $msg    = array_key_exists($result, $this->resultArr) ? $this->resultArr[$result] : 'unknown error';
             $this->result(Agent::INFO, json_encode(['code' => $result, 'msg' => $msg]));
             $this->result(Agent::SUCCESS, $result === '0');
             $this->result(Agent::CODE, $result);

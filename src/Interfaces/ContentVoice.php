@@ -1,6 +1,6 @@
 <?php
 
-namespace Toplan\PhpSms;
+namespace Lucups\PhpSms\Interfaces;
 
 interface ContentVoice
 {
@@ -8,7 +8,7 @@ interface ContentVoice
      * Content voice send process.
      *
      * @param string|array $to
-     * @param string       $content
+     * @param string $content
      */
     public function sendContentVoice($to, $content);
 }

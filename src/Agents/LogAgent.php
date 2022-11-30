@@ -1,6 +1,10 @@
 <?php
 
-namespace Toplan\PhpSms;
+namespace Lucups\PhpSms\Agents;
+
+use Lucups\PhpSms\Interfaces\ContentSms;
+use Lucups\PhpSms\Interfaces\TemplateSms;
+use Lucups\PhpSms\Interfaces\VoiceCode;
 
 /**
  * Class LogAgent

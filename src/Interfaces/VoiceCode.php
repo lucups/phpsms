@@ -1,6 +1,6 @@
 <?php
 
-namespace Toplan\PhpSms;
+namespace Lucups\PhpSms\Interfaces;
 
 interface VoiceCode
 {
@@ -8,7 +8,7 @@ interface VoiceCode
      * Voice code send process.
      *
      * @param string|array $to
-     * @param int|string   $code
+     * @param int|string $code
      */
     public function sendVoiceCode($to, $code);
 }

@@ -1,6 +1,13 @@
 <?php
 
-namespace Toplan\PhpSms;
+namespace Lucups\PhpSms\Agents;
+
+use Lucups\PhpSms\Interfaces\ContentSms;
+use Lucups\PhpSms\Interfaces\ContentVoice;
+use Lucups\PhpSms\Interfaces\FileVoice;
+use Lucups\PhpSms\Interfaces\TemplateSms;
+use Lucups\PhpSms\Interfaces\TemplateVoice;
+use Lucups\PhpSms\Interfaces\VoiceCode;
 
 /**
  * Class ParasiticAgent
@@ -23,7 +30,7 @@ class ParasiticAgent extends Agent implements ContentSms, TemplateSms, VoiceCode
      * Content SMS send process.
      *
      * @param string|array $to
-     * @param string       $content
+     * @param string $content
      */
     public function sendContentSms($to, $content)
     {
@@ -34,7 +41,7 @@ class ParasiticAgent extends Agent implements ContentSms, TemplateSms, VoiceCode
      * Content voice send process.
      *
      * @param string|array $to
-     * @param string       $content
+     * @param string $content
      */
     public function sendContentVoice($to, $content)
     {
@@ -45,7 +52,7 @@ class ParasiticAgent extends Agent implements ContentSms, TemplateSms, VoiceCode
      * File voice send process.
      *
      * @param string|array $to
-     * @param int|string   $fileId
+     * @param int|string $fileId
      */
     public function sendFileVoice($to, $fileId)
     {
@@ -56,8 +63,8 @@ class ParasiticAgent extends Agent implements ContentSms, TemplateSms, VoiceCode
      * Template SMS send process.
      *
      * @param string|array $to
-     * @param int|string   $tempId
-     * @param array        $tempData
+     * @param int|string $tempId
+     * @param array $tempData
      */
     public function sendTemplateSms($to, $tempId, array $tempData)
     {
@@ -68,8 +75,8 @@ class ParasiticAgent extends Agent implements ContentSms, TemplateSms, VoiceCode
      * Template voice send process.
      *
      * @param string|array $to
-     * @param int|string   $tempId
-     * @param array        $tempData
+     * @param int|string $tempId
+     * @param array $tempData
      */
     public function sendTemplateVoice($to, $tempId, array $tempData)
     {
@@ -80,7 +87,7 @@ class ParasiticAgent extends Agent implements ContentSms, TemplateSms, VoiceCode
      * Voice code send process.
      *
      * @param string|array $to
-     * @param int|string   $code
+     * @param int|string $code
      */
     public function sendVoiceCode($to, $code)
     {
@@ -110,7 +117,7 @@ class ParasiticAgent extends Agent implements ContentSms, TemplateSms, VoiceCode
     {
         if (!is_array(self::$methods)) {
             self::$methods = [];
-            $interfaces = class_implements('Toplan\\PhpSms\\ParasiticAgent');
+            $interfaces    = class_implements('Lucups\\PhpSms\\Agents\\ParasiticAgent');
             foreach ($interfaces as $interface) {
                 self::$methods = array_merge(self::$methods, get_class_methods($interface));
             }
@@ -118,4 +125,5 @@ class ParasiticAgent extends Agent implements ContentSms, TemplateSms, VoiceCode
 
         return self::$methods;
     }
+
 }

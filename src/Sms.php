@@ -1,7 +1,10 @@
 <?php
 
-namespace Toplan\PhpSms;
+namespace Lucups\PhpSms;
 
+use Lucups\PhpSms\Agents\Agent;
+use Lucups\PhpSms\Agents\ParasiticAgent;
+use Lucups\PhpSms\Exceptions\PhpSmsException;
 use Toplan\TaskBalance\Driver;
 use Toplan\TaskBalance\Task;
 
@@ -9,10 +12,11 @@ use Toplan\TaskBalance\Task;
  * Class Sms
  *
  * @author toplan<toplan710@gmail.com>
+ * @author "Tony Lu"<lucups@gmail.com>
  */
 class Sms
 {
-    const TYPE_SMS = 1;
+    const TYPE_SMS   = 1;
     const TYPE_VOICE = 2;
 
     /**
@@ -196,7 +200,7 @@ class Sms
         if (empty($agents)) {
             return;
         }
-        $config = empty($config) ? include __DIR__ . '/../config/phpsms.php' : $config;
+        $config       = empty($config) ? include __DIR__ . '/../config/phpsms.php' : $config;
         $agentsConfig = isset($config['agents']) ? $config['agents'] : [];
         foreach ($agents as $name) {
             $agentConfig = isset($agentsConfig[$name]) ? $agentsConfig[$name] : [];
@@ -207,7 +211,7 @@ class Sms
     /**
      * register driver.
      *
-     * @param string       $name
+     * @param string $name
      * @param string|array $scheme
      */
     protected static function registerDriver($name, $scheme)
@@ -216,15 +220,15 @@ class Sms
         $settings = [];
         if (is_array($scheme)) {
             $settings = self::parseScheme($scheme);
-            $scheme = $settings['scheme'];
+            $scheme   = $settings['scheme'];
         }
         // register
         self::getTask()->driver("$name $scheme")->work(function (Driver $driver) use ($settings) {
             $agent = self::getAgent($driver->name, $settings);
             extract($driver->getTaskData());
             $template = isset($templates[$driver->name]) ? $templates[$driver->name] : null;
-            $file = isset($files[$driver->name]) ? $files[$driver->name] : null;
-            $params = isset($params[$driver->name]) ? $params[$driver->name] : [];
+            $file     = isset($files[$driver->name]) ? $files[$driver->name] : null;
+            $params   = isset($params[$driver->name]) ? $params[$driver->name] : [];
             if ($type === self::TYPE_VOICE) {
                 $agent->sendVoice($to, $content, $template, $data, $code, $file, $params);
             } elseif ($type === self::TYPE_SMS) {
@@ -251,11 +255,11 @@ class Sms
     {
         $weight = Util::pullFromArray($options, 'weight');
         $backup = Util::pullFromArray($options, 'backup') ? 'backup' : '';
-        $props = array_filter(array_values($options), function ($prop) {
+        $props  = array_filter(array_values($options), function ($prop) {
             return is_numeric($prop) || is_string($prop);
         });
 
-        $options['scheme'] = implode(' ', $props) . " $weight $backup";
+        $options['scheme'] = implode(' ', $props) . " Sms.php";
 
         return $options;
     }
@@ -264,11 +268,11 @@ class Sms
      * Get the agent instance by name.
      *
      * @param string $name
-     * @param array  $options
-     *
-     * @throws PhpSmsException
+     * @param array $options
      *
      * @return Agent
+     * @throws PhpSmsException
+     *
      */
     public static function getAgent($name, array $options = [])
     {
@@ -281,7 +285,7 @@ class Sms
             if (isset($options['scheme'])) {
                 unset($options['scheme']);
             }
-            $className = "Toplan\\PhpSms\\{$name}Agent";
+            $className = "Lucups\\PhpSms\\Agents\\{$name}Agent";
             if (isset($options['agentClass'])) {
                 $className = $options['agentClass'];
                 unset($options['agentClass']);
@@ -313,9 +317,9 @@ class Sms
     /**
      * Set or get the dispatch scheme.
      *
-     * @param string|array|null      $name
+     * @param string|array|null $name
      * @param string|array|bool|null $scheme
-     * @param bool                   $override
+     * @param bool $override
      *
      * @return mixed
      */
@@ -343,7 +347,7 @@ class Sms
     /**
      * Modify the dispatch scheme of agent.
      *
-     * @param string       $name
+     * @param string $name
      * @param string|array $scheme
      *
      * @throws PhpSmsException
@@ -357,7 +361,7 @@ class Sms
             if ($driver) {
                 if (is_array($scheme)) {
                     $higherOrderScheme = self::parseScheme($scheme);
-                    $scheme = $higherOrderScheme['scheme'];
+                    $scheme            = $higherOrderScheme['scheme'];
                 }
                 $driver->reset($scheme);
             } else {
@@ -370,12 +374,12 @@ class Sms
      * Set or get the configuration information.
      *
      * @param string|array|null $name
-     * @param array|bool|null   $config
-     * @param bool              $override
-     *
-     * @throws PhpSmsException
+     * @param array|bool|null $config
+     * @param bool $override
      *
      * @return array
+     * @throws PhpSmsException
+     *
      */
     public static function config($name = null, $config = null, $override = false)
     {
@@ -396,8 +400,8 @@ class Sms
      * Modify the configuration information.
      *
      * @param string $name
-     * @param array  $config
-     * @param bool   $override
+     * @param array $config
+     * @param bool $override
      *
      * @throws PhpSmsException
      */
@@ -494,7 +498,7 @@ class Sms
      * and define how to use it.
      *
      * @param bool|\Closure|null $enable
-     * @param \Closure|null      $handler
+     * @param \Closure|null $handler
      *
      * @return bool
      */
@@ -505,9 +509,9 @@ class Sms
         }
         if (is_callable($enable)) {
             $handler = $enable;
-            $enable = true;
+            $enable  = true;
         }
-        self::$enableQueue = (bool) $enable;
+        self::$enableQueue = (bool)$enable;
         if (is_callable($handler)) {
             self::$howToUseQueue = $handler;
         }
@@ -520,9 +524,9 @@ class Sms
      *
      * @param $type
      *
+     * @return $this
      * @throws PhpSmsException
      *
-     * @return $this
      */
     public function type($type)
     {
@@ -560,7 +564,7 @@ class Sms
      */
     public function content($content)
     {
-        $this->smsData['content'] = trim((string) $content);
+        $this->smsData['content'] = trim((string)$content);
 
         return $this;
     }
@@ -613,7 +617,7 @@ class Sms
      * Set voice file.
      *
      * @param string|array $name
-     * @param string|int   $id
+     * @param string|int $id
      *
      * @return $this
      */
@@ -627,9 +631,9 @@ class Sms
     /**
      * Set params of agent.
      *
-     * @param string|array    $name
+     * @param string|array $name
      * @param array|bool|null $params
-     * @param bool            $override
+     * @param bool $override
      *
      * @return $this
      */
@@ -656,9 +660,9 @@ class Sms
      *
      * @param string $name
      *
+     * @return $this
      * @throws PhpSmsException
      *
-     * @return $this
      */
     public function agent($name)
     {
@@ -696,9 +700,9 @@ class Sms
     /**
      * Push to the queue system.
      *
+     * @return mixed
      * @throws \Exception | PhpSmsException
      *
-     * @return mixed
      */
     public function push()
     {
@@ -735,7 +739,7 @@ class Sms
      * Define the static hook methods by overload static method.
      *
      * @param string $name
-     * @param array  $args
+     * @param array $args
      *
      * @throws PhpSmsException
      */
@@ -748,8 +752,8 @@ class Sms
         if (!in_array($name, self::$availableHooks)) {
             throw new PhpSmsException("Not found methods `$name`.");
         }
-        $handler = $args[0];
-        $override = isset($args[1]) ? (bool) $args[1] : false;
+        $handler  = $args[0];
+        $override = isset($args[1]) ? (bool)$args[1] : false;
         self::getTask()->hook($name, $handler, $override);
     }
 
@@ -757,7 +761,7 @@ class Sms
      * Define the hook methods by overload method.
      *
      * @param string $name
-     * @param array  $args
+     * @param array $args
      *
      * @throws PhpSmsException
      * @throws \Exception
@@ -779,100 +783,13 @@ class Sms
     public function __sleep()
     {
         try {
-            $this->state['scheme'] = self::toggleSerializeScheme(self::scheme());
+            $this->state['scheme']       = self::toggleSerializeScheme(self::scheme());
             $this->state['agentsConfig'] = self::config();
-            $this->state['handlers'] = self::serializeHandlers();
+            $this->state['handlers']     = self::serializeHandlers();
         } catch (\Exception $e) {
             //swallow exception
         }
 
         return ['smsData', 'firstAgent', 'pushedToQueue', 'state'];
-    }
-
-    /**
-     * Deserialize magic method.
-     */
-    public function __wakeup()
-    {
-        if (empty($this->state)) {
-            return;
-        }
-        self::$scheme = self::toggleSerializeScheme($this->state['scheme']);
-        self::$agentsConfig = $this->state['agentsConfig'];
-        self::reinstallHandlers($this->state['handlers']);
-    }
-
-    /**
-     * Serialize or deserialize the scheme.
-     *
-     * @param array $scheme
-     *
-     * @return array
-     */
-    protected static function toggleSerializeScheme(array $scheme)
-    {
-        foreach ($scheme as $name => &$options) {
-            if (is_array($options)) {
-                foreach (ParasiticAgent::methods() as $method) {
-                    self::toggleSerializeClosure($options, $method);
-                }
-            }
-        }
-
-        return $scheme;
-    }
-
-    /**
-     * Serialize the hooks' handlers.
-     *
-     * @return array
-     */
-    protected static function serializeHandlers()
-    {
-        $hooks = (array) self::getTask()->handlers;
-        foreach ($hooks as &$handlers) {
-            foreach (array_keys($handlers) as $key) {
-                self::toggleSerializeClosure($handlers, $key);
-            }
-        }
-
-        return $hooks;
-    }
-
-    /**
-     * Reinstall hooks' handlers.
-     *
-     * @param array $handlers
-     */
-    protected static function reinstallHandlers(array $handlers)
-    {
-        $serializer = Util::getClosureSerializer();
-        foreach ($handlers as $hookName => $serializedHandlers) {
-            foreach ($serializedHandlers as $index => $handler) {
-                if (is_string($handler)) {
-                    $handler = $serializer->unserialize($handler);
-                }
-                self::$hookName($handler, $index === 0);
-            }
-        }
-    }
-
-    /**
-     * Serialize or deserialize the specified closure and then replace the original value.
-     *
-     * @param array      $options
-     * @param int|string $key
-     */
-    protected static function toggleSerializeClosure(array &$options, $key)
-    {
-        if (!isset($options[$key])) {
-            return;
-        }
-        $serializer = Util::getClosureSerializer();
-        if (is_callable($options[$key])) {
-            $options[$key] = (string) $serializer->serialize($options[$key]);
-        } elseif (is_string($options[$key])) {
-            $options[$key] = $serializer->unserialize($options[$key]);
-        }
     }
 }

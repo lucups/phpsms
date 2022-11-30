@@ -1,6 +1,6 @@
 <?php
 
-namespace Toplan\PhpSms;
+namespace Lucups\PhpSms\Exceptions;
 
 class PhpSmsException extends \Exception
 {

@@ -1,13 +1,11 @@
 <?php
 
-namespace Toplan\PhpSms;
+namespace Lucups\PhpSms;
 
 use SuperClosure\Serializer;
 
 class Util
 {
-    protected static $closureSerializer = null;
-
     public static function operateArray(array &$array, $key, $value = null, $default = null, \Closure $setter = null, $override = false, $willOverride = null, $isSet = false)
     {
         if (!$isSet && ($key === null || is_string($key) || is_int($key)) && $value === null) {
@@ -45,23 +43,14 @@ class Util
         return $value;
     }
 
-    public static function getClosureSerializer()
-    {
-        if (empty(self::$closureSerializer)) {
-            self::$closureSerializer = new Serializer();
-        }
-
-        return self::$closureSerializer;
-    }
-
     public static function formatMobiles($target)
     {
         if (!is_array($target)) {
             return [$target];
         }
-        $list = [];
+        $list   = [];
         $nation = $number = null;
-        $count = count($target);
+        $count  = count($target);
         if ($count === 2) {
             $firstItem = $target[0];
             if (is_int($firstItem) && $firstItem > 0 && $firstItem <= 9999) {

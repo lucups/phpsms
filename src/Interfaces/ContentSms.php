@@ -1,6 +1,6 @@
 <?php
 
-namespace Toplan\PhpSms;
+namespace Lucups\PhpSms\Interfaces;
 
 interface ContentSms
 {
@@ -8,7 +8,7 @@ interface ContentSms
      * Content SMS send process.
      *
      * @param string|array $to
-     * @param string       $content
+     * @param string $content
      */
     public function sendContentSms($to, $content);
 }
