@@ -1,6 +1,6 @@
 {
     "name": "lucups/phpsms",
-    "description": "Probably the most intelligent, elegant sms send library in php",
+    "description": "Forked from toplan/phpsms, fewer features, more possibilities.",
     "license": "MIT",
     "keywords": [
         "sms",
@@ -12,6 +12,10 @@
         {
             "name": "toplan",
             "email": "toplan710@gmail.com"
+        },
+        {
+            "name": "Tony Lu",
+            "email": "lucups@gmail.com"
         }
     ],
     "require": {
